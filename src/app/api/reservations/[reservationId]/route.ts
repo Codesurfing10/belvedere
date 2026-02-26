@@ -1,4 +1,5 @@
-export const dynamic = "force-dynamic";
+export function generateStaticParams() { return []; }
+
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 

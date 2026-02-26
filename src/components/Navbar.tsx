@@ -42,6 +42,7 @@ export default function Navbar() {
         <div className="hidden sm:flex items-center gap-6">
           {navLink("/owner", "Owner Portal")}
           {navLink("/marketplace/property-managers", "Marketplace")}
+          {navLink("/statistics", "Statistics")}
         </div>
 
         {/* Auth area */}

@@ -1,0 +1,43 @@
+{
+  "kpis": {
+    "totalProperties": 42,
+    "totalReservations": 318,
+    "totalOrders": 214,
+    "avgRating": 4.6
+  },
+  "monthlyReservations": [
+    { "month": "Aug", "count": 18 },
+    { "month": "Sep", "count": 25 },
+    { "month": "Oct", "count": 31 },
+    { "month": "Nov", "count": 22 },
+    { "month": "Dec", "count": 38 },
+    { "month": "Jan", "count": 29 },
+    { "month": "Feb", "count": 34 },
+    { "month": "Mar", "count": 41 },
+    { "month": "Apr", "count": 36 },
+    { "month": "May", "count": 45 },
+    { "month": "Jun", "count": 52 },
+    { "month": "Jul", "count": 47 }
+  ],
+  "monthlyRevenue": [
+    { "month": "Aug", "amount": 3200 },
+    { "month": "Sep", "amount": 4750 },
+    { "month": "Oct", "amount": 5900 },
+    { "month": "Nov", "amount": 4100 },
+    { "month": "Dec", "amount": 7200 },
+    { "month": "Jan", "amount": 5400 },
+    { "month": "Feb", "amount": 6300 },
+    { "month": "Mar", "amount": 7800 },
+    { "month": "Apr", "amount": 6700 },
+    { "month": "May", "amount": 8500 },
+    { "month": "Jun", "amount": 9900 },
+    { "month": "Jul", "amount": 8800 }
+  ],
+  "topCategories": [
+    { "name": "Toiletries", "orders": 87 },
+    { "name": "Linens", "orders": 64 },
+    { "name": "Groceries", "orders": 53 },
+    { "name": "Activities", "orders": 38 },
+    { "name": "Kitchen", "orders": 29 }
+  ]
+}

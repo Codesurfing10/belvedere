@@ -3,6 +3,7 @@ node_modules/
 .env.local
 dist/
 build/
+out/
 *.log
 .DS_Store
 prisma/migrations/
