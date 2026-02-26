@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { TriggerAgentSchema } from "@/lib/zod-schemas";
 import { addInventoryGapAnalysisJob } from "@/jobs/queue";

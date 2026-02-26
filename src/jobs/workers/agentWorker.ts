@@ -1,5 +1,5 @@
 import { Worker } from "bullmq";
-import { redis } from "@/lib/redis";
+import { getRedis } from "@/lib/redis";
 import { runInventoryGapAnalysis } from "@/agent/workflows/inventoryGapAnalysis";
 
 const worker = new Worker(
@@ -13,7 +13,7 @@ const worker = new Worker(
       return result;
     }
   },
-  { connection: redis }
+  { connection: getRedis() }
 );
 
 worker.on("completed", (job) => {
