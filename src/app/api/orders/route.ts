@@ -17,6 +17,11 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(orders);
 }
 
+function isValidCartStatusForOrder(status: string, requiresApproval: boolean): boolean {
+  if (requiresApproval) return status === "APPROVED";
+  return status === "APPROVED" || status === "PENDING" || status === "SUGGESTED";
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const parsed = CreateOrderSchema.safeParse(body);
@@ -33,11 +38,11 @@ export async function POST(req: NextRequest) {
   const property = cart.reservation.property;
   const requiresApproval = !property.autoApprove;
 
-  if (requiresApproval && cart.status !== "APPROVED") {
-    return NextResponse.json({ error: "Cart must be approved by the owner before ordering" }, { status: 400 });
-  }
-  if (!requiresApproval && cart.status !== "APPROVED" && cart.status !== "PENDING" && cart.status !== "SUGGESTED") {
-    return NextResponse.json({ error: "Cart is not in a valid state for ordering" }, { status: 400 });
+  if (!isValidCartStatusForOrder(cart.status, requiresApproval)) {
+    const msg = requiresApproval
+      ? "Cart must be approved by the owner before ordering"
+      : "Cart is not in a valid state for ordering";
+    return NextResponse.json({ error: msg }, { status: 400 });
   }
 
   const order = await prisma.$transaction(async (tx) => {

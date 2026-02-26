@@ -17,9 +17,14 @@ export async function POST(req: NextRequest, { params }: { params: { cartId: str
 
   const cart = await prisma.cart.findUnique({
     where: { id: params.cartId },
-    include: { reservation: true },
+    include: { reservation: { include: { property: true } } },
   });
   if (!cart) return NextResponse.json({ error: "Cart not found" }, { status: 404 });
+
+  // Ensure only the property owner can approve/reject carts
+  if (cart.reservation.property.ownerId !== userId) {
+    return NextResponse.json({ error: "Forbidden: only the property owner can approve carts" }, { status: 403 });
+  }
 
   const newStatus = action === "approve" ? "APPROVED" : "REJECTED";
   const updatedCart = await prisma.cart.update({

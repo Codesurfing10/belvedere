@@ -19,20 +19,23 @@ export async function PUT(req: NextRequest, { params }: { params: { propertyId: 
   const { name, description, items } = parsed.data;
 
   const template = await prisma.$transaction(async (tx) => {
-    let tmpl = await tx.inventoryTemplate.findUnique({ where: { propertyId: params.propertyId } });
-    if (!tmpl) {
-      tmpl = await tx.inventoryTemplate.create({ data: { propertyId: params.propertyId, name, description } });
+    let tmplId: string;
+    const existing = await tx.inventoryTemplate.findUnique({ where: { propertyId: params.propertyId } });
+    if (!existing) {
+      const created = await tx.inventoryTemplate.create({ data: { propertyId: params.propertyId, name, description } });
+      tmplId = created.id;
     } else {
-      tmpl = await tx.inventoryTemplate.update({ where: { id: tmpl.id }, data: { name, description } });
+      await tx.inventoryTemplate.update({ where: { id: existing.id }, data: { name, description } });
+      tmplId = existing.id;
     }
-    await tx.inventoryTemplateItem.deleteMany({ where: { templateId: tmpl.id } });
+    await tx.inventoryTemplateItem.deleteMany({ where: { templateId: tmplId } });
     if (items.length > 0) {
       await tx.inventoryTemplateItem.createMany({
-        data: items.map((item) => ({ templateId: tmpl!.id, ...item })),
+        data: items.map((item) => ({ templateId: tmplId, ...item })),
       });
     }
     return tx.inventoryTemplate.findUnique({
-      where: { id: tmpl.id },
+      where: { id: tmplId },
       include: { items: { include: { product: true } } },
     });
   });
