@@ -26,11 +26,18 @@ export async function POST(req: NextRequest) {
 
   const cart = await prisma.cart.findUnique({
     where: { id: cartId },
-    include: { reservation: true },
+    include: { reservation: { include: { property: true } } },
   });
   if (!cart) return NextResponse.json({ error: "Cart not found" }, { status: 404 });
-  if (cart.status !== "APPROVED" && cart.status !== "PENDING") {
-    return NextResponse.json({ error: "Cart must be approved or pending to order" }, { status: 400 });
+
+  const property = cart.reservation.property;
+  const requiresApproval = !property.autoApprove;
+
+  if (requiresApproval && cart.status !== "APPROVED") {
+    return NextResponse.json({ error: "Cart must be approved by the owner before ordering" }, { status: 400 });
+  }
+  if (!requiresApproval && cart.status !== "APPROVED" && cart.status !== "PENDING" && cart.status !== "SUGGESTED") {
+    return NextResponse.json({ error: "Cart is not in a valid state for ordering" }, { status: 400 });
   }
 
   const order = await prisma.$transaction(async (tx) => {

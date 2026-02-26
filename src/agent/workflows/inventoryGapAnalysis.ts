@@ -34,7 +34,7 @@ export async function runInventoryGapAnalysis(reservationId: string): Promise<An
         },
       },
       carts: {
-        where: { status: { in: ["PENDING", "APPROVED", "SUGGESTED"] } },
+        where: { status: { in: ["PENDING", "APPROVED"] } },
         include: { items: true },
       },
     },
