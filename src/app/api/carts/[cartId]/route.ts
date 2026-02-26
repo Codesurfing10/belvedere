@@ -3,16 +3,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { UpdateCartSchema } from "@/lib/zod-schemas";
 
-export async function GET(_req: NextRequest, { params }: { params: { cartId: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ cartId: string }> }) {
+  const { cartId } = await params;
   const cart = await prisma.cart.findUnique({
-    where: { id: params.cartId },
+    where: { id: cartId },
     include: { items: { include: { product: true } } },
   });
   if (!cart) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(cart);
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { cartId: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ cartId: string }> }) {
+  const { cartId } = await params;
   const body = await req.json();
   const parsed = UpdateCartSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
@@ -28,9 +30,9 @@ export async function PUT(req: NextRequest, { params }: { params: { cartId: stri
   }, 0);
 
   const cart = await prisma.$transaction(async (tx) => {
-    await tx.cartItem.deleteMany({ where: { cartId: params.cartId } });
+    await tx.cartItem.deleteMany({ where: { cartId } });
     return tx.cart.update({
-      where: { id: params.cartId },
+      where: { id: cartId },
       data: {
         totalAmount,
         items: {

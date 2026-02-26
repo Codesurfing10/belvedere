@@ -5,7 +5,8 @@ import { ApproveCartSchema } from "@/lib/zod-schemas";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-export async function POST(req: NextRequest, { params }: { params: { cartId: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ cartId: string }> }) {
+  const { cartId } = await params;
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest, { params }: { params: { cartId: str
   const userId = (session.user as { id: string }).id;
 
   const cart = await prisma.cart.findUnique({
-    where: { id: params.cartId },
+    where: { id: cartId },
     include: { reservation: { include: { property: true } } },
   });
   if (!cart) return NextResponse.json({ error: "Cart not found" }, { status: 404 });
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest, { params }: { params: { cartId: str
 
   const newStatus = action === "approve" ? "APPROVED" : "REJECTED";
   const updatedCart = await prisma.cart.update({
-    where: { id: params.cartId },
+    where: { id: cartId },
     data: { status: newStatus },
   });
 
@@ -37,7 +38,7 @@ export async function POST(req: NextRequest, { params }: { params: { cartId: str
     data: {
       reservationId: cart.reservationId,
       action: `cart_${action}d`,
-      details: { cartId: params.cartId, action, userId },
+      details: { cartId, action, userId },
       triggeredBy: userId,
     },
   });
