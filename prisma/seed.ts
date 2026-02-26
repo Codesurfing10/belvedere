@@ -65,8 +65,83 @@ async function main() {
   });
 
   await prisma.serviceRegion.deleteMany({ where: { managerId: propertyManager.id } });
-  await prisma.serviceRegion.create({
-    data: { managerId: propertyManager.id, region: "Northeast" },
+  await prisma.serviceRegion.createMany({
+    data: [
+      { managerId: propertyManager.id, region: "Northeast" },
+      { managerId: propertyManager.id, region: "Burlington, VT 05401" },
+      { managerId: propertyManager.id, region: "05401" },
+      { managerId: propertyManager.id, region: "05402" },
+    ],
+  });
+
+  // --- Extra demo managers for zip-code search ---
+  const manager2Hash = await bcrypt.hash("password", 10);
+  const manager3Hash = await bcrypt.hash("password", 10);
+
+  const managerUser2 = await prisma.user.upsert({
+    where: { email: "manager2@example.com" },
+    update: {},
+    create: {
+      email: "manager2@example.com",
+      name: "Elena Ramirez",
+      role: "MANAGER",
+      passwordHash: manager2Hash,
+    },
+  });
+
+  const managerUser3 = await prisma.user.upsert({
+    where: { email: "manager3@example.com" },
+    update: {},
+    create: {
+      email: "manager3@example.com",
+      name: "Marco Sullivan",
+      role: "MANAGER",
+      passwordHash: manager3Hash,
+    },
+  });
+
+  const pm2 = await prisma.propertyManager.upsert({
+    where: { userId: managerUser2.id },
+    update: {},
+    create: {
+      userId: managerUser2.id,
+      bio: "Specializing in beachfront and Gulf Coast vacation rentals since 2015.",
+      rating: 4.6,
+      reviewCount: 18,
+    },
+  });
+
+  const pm3 = await prisma.propertyManager.upsert({
+    where: { userId: managerUser3.id },
+    update: {},
+    create: {
+      userId: managerUser3.id,
+      bio: "West Coast luxury property management with a focus on guest experience.",
+      rating: 4.9,
+      reviewCount: 31,
+    },
+  });
+
+  await prisma.serviceRegion.deleteMany({ where: { managerId: pm2.id } });
+  await prisma.serviceRegion.createMany({
+    data: [
+      { managerId: pm2.id, region: "Southeast" },
+      { managerId: pm2.id, region: "Miami, FL 33101" },
+      { managerId: pm2.id, region: "33101" },
+      { managerId: pm2.id, region: "33102" },
+      { managerId: pm2.id, region: "33109" },
+    ],
+  });
+
+  await prisma.serviceRegion.deleteMany({ where: { managerId: pm3.id } });
+  await prisma.serviceRegion.createMany({
+    data: [
+      { managerId: pm3.id, region: "West Coast" },
+      { managerId: pm3.id, region: "Los Angeles, CA 90210" },
+      { managerId: pm3.id, region: "90210" },
+      { managerId: pm3.id, region: "90211" },
+      { managerId: pm3.id, region: "90212" },
+    ],
   });
 
   const property = await prisma.property.upsert({
