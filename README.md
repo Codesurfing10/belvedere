@@ -79,6 +79,20 @@ The GitHub Actions workflow will rebuild and redeploy automatically.
 }
 ```
 
+## Mobile App (Flutter)
+
+A Flutter app for iOS and Android lives under [`mobile/`](./mobile/README.md).  
+It replicates the core Belvedere flows — Sign In, Owner Dashboard, Marketplace, and Statistics — by consuming the Next.js backend API.
+
+```bash
+cd mobile
+flutter pub get
+flutter run --dart-define=API_BASE_URL=http://localhost:3000   # iOS Simulator
+# Android emulator: API_BASE_URL=http://10.0.2.2:3000
+```
+
+See [`mobile/README.md`](./mobile/README.md) for full setup instructions.
+
 ## Tech Stack
 
 - **Framework**: Next.js 15 (App Router, static export for GitHub Pages)
@@ -87,3 +101,4 @@ The GitHub Actions workflow will rebuild and redeploy automatically.
 - **Auth**: NextAuth.js (JWT)
 - **Queue**: BullMQ + Redis
 - **Charts**: Custom SVG (no extra dependency)
+- **Mobile**: Flutter (iOS + Android)
